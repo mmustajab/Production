@@ -1,0 +1,43 @@
+function DefaultEmailFrom(executionContext) {
+
+	// #region Variable Declaration & initialization
+	
+	var formContext = executionContext.getFormContext(); // get formContext
+	var EntityType = formContext.getAttribute("regardingobjectid") != null ? 
+						formContext.getAttribute("regardingobjectid").getValue() != null ?
+							formContext.getAttribute("regardingobjectid").getValue()[0].entityType : null : null;
+	//failing in case of null
+	var FromAddress = formContext.getAttribute("from") != null ? 
+							formContext.getAttribute("from").getValue() != null ? 
+									formContext.getAttribute("from").getValue()[0].id.replace("{", "").replace("}","").toLowerCase() : null : null;
+	
+	var FormType = formContext.ui.getFormType(); 
+	var associatedQueueView = formContext.getControl("from") != null ? formContext.getControl("from") : null;
+	
+	// #endregion
+	
+	// #region Logic
+	
+		//Set the default view and queue
+		associatedQueueView.setEntityTypes(["queue"]);
+		associatedQueueView.setDefaultView("{212E66FD-2724-EB11-A813-000D3A86AA92}");
+		
+		//Update the queue
+		if (FromAddress != null && FromAddress != "54623ecf-a713-eb11-a813-002248005e55" && FromAddress != "363765f9-a713-eb11-a813-002248005e55" && EntityType == "incident" && (FormType == 1 || FormType == 2)) 
+		{
+			setTimeout(function () {
+
+				var queue = new Array();
+				queue[0] = new Object();
+				queue[0].id = "54623ecf-a713-eb11-a813-002248005e55";
+				queue[0].name = "UK & Global E-mails";
+				queue[0].entityType = "queue";
+				formContext.getAttribute("from").setValue(queue);
+			}, 1000);
+			
+			formContext.data.save();
+		}
+		
+	// #endregion
+
+}
